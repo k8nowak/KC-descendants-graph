@@ -163,10 +163,22 @@ def visualize_descendance_graph_interactive(G, output_file='kc_descendance_graph
             fixed={'x': False, 'y': False}  # Allow dragging
         )
     
-    # Add edges
+    # Add edges with tooltips showing both node descriptions
     for edge in G.edges():
         source, target = edge
-        net.add_edge(source, target, color='#888888', width=1)
+        
+        # Get descriptions for both nodes, fallback to KC number if no description
+        source_description = G.nodes[source].get('description', '')
+        target_description = G.nodes[target].get('description', '')
+        source_number = G.nodes[source].get('number', source)
+        target_number = G.nodes[target].get('number', target)
+        
+        # Create tooltip text
+        from_text = source_description if source_description else f'KC {source_number}'
+        to_text = target_description if target_description else f'KC {target_number}'
+        tooltip_text = f'From: {from_text}\nTo: {to_text}'
+        
+        net.add_edge(source, target, color='#888888', width=1, title=tooltip_text)
     
     # Save as HTML (don't set heading here to avoid duplication)
     net.save_graph(output_file)
